@@ -9,18 +9,16 @@
 <body>
 <div id="game-wrapper">
 
-  <!-- ── Main canvas ── -->
   <canvas id="game-canvas"></canvas>
 
-  <!-- ── HUD ── -->
   <div id="hud">
 
-    <!-- Top stats bar -->
+    <!-- ── Top stats bar ── -->
     <div id="stats-bar">
       <div class="stat-group">
         <span class="stat-lbl">HP</span>
         <div class="bar-wrap"><div id="hp-bar" class="bar hp-bar"></div></div>
-        <span id="hp-text"  class="stat-val">100/100</span>
+        <span id="hp-text" class="stat-val">100/100</span>
       </div>
       <div class="stat-group">
         <span class="stat-lbl">RAD</span>
@@ -33,55 +31,48 @@
         <span id="cold-text" class="stat-val">0</span>
       </div>
       <div class="stat-pill">ХОД&nbsp;<span id="turn-text" class="amber">1</span></div>
+      <div class="stat-pill"><span id="level-text">Ур.1</span>&nbsp;<span id="xp-text" class="dim">0/80</span></div>
       <div class="stat-pill">БРОНЯ&nbsp;<span id="armor-text">0</span></div>
       <div class="stat-pill">ОРУЖИЕ&nbsp;<span id="weapon-text">Кулаки</span></div>
       <div class="stat-pill dim">POS&nbsp;<span id="pos-text">0,0</span></div>
+      <div class="stat-pill">
+        <span id="status-bleed" class="status-badge bleed" style="display:none">КРОВО</span>
+        <span id="status-stun"  class="status-badge stun"  style="display:none">ОГЛУШ</span>
+      </div>
+      <button id="btn-save" class="hud-btn" title="Сохранить (F5/N)">💾</button>
     </div>
 
-    <!-- Right panel -->
+    <!-- ── Right panel ── -->
     <div id="right-panel">
-
-      <!-- Minimap -->
       <div class="panel-title">[ КАРТА ]</div>
       <canvas id="minimap" width="240" height="140"></canvas>
 
-      <!-- Inventory -->
       <div class="panel-title">[ ИНВЕНТАРЬ ]</div>
       <div id="inventory-slots"></div>
 
       <div class="panel-section">СНАРЯЖЕНИЕ</div>
       <div id="equipment-slots">
-        <div class="equip-row">
-          <span class="eq-lbl">ОРУЖИЕ:</span>
-          <span id="equip-weapon" class="eq-val">—</span>
-        </div>
-        <div class="equip-row">
-          <span class="eq-lbl">БРОНЯ:</span>
-          <span id="equip-armor" class="eq-val">—</span>
-        </div>
-        <div class="equip-row">
-          <span class="eq-lbl">ГОЛОВА:</span>
-          <span id="equip-head" class="eq-val">—</span>
-        </div>
+        <div class="equip-row"><span class="eq-lbl">ОРУЖИЕ:</span><span id="equip-weapon" class="eq-val">—</span></div>
+        <div class="equip-row"><span class="eq-lbl">БРОНЯ:</span> <span id="equip-armor"  class="eq-val">—</span></div>
+        <div class="equip-row"><span class="eq-lbl">ГОЛОВА:</span><span id="equip-head"   class="eq-val">—</span></div>
       </div>
-      <div class="panel-hint">ПКМ — надеть/использовать&nbsp;|&nbsp;[1–0] быстро</div>
+      <div class="panel-hint">ПКМ надеть/использовать · [1–0] быстро · Tab крафт</div>
 
-      <!-- Log -->
       <div class="panel-title">[ ЛОГ ]</div>
       <div id="log-entries"></div>
     </div>
 
-    <!-- Bottom help bar -->
+    <!-- ── Help bar ── -->
     <div id="help-bar">
-      WASD/←↑↓→ Движение &nbsp;·&nbsp; QE/ZC диагонали &nbsp;·&nbsp; F/Пробел Подобрать &nbsp;·&nbsp; [1–0] Использовать предмет
+      WASD/←↑↓→ движение &nbsp;·&nbsp; QE/ZC диагонали &nbsp;·&nbsp; F подобрать &nbsp;·&nbsp; Tab крафт &nbsp;·&nbsp; F5 сохранить &nbsp;·&nbsp; Esc закрыть
     </div>
 
-    <!-- Pickup prompt -->
+    <!-- ── Pickup prompt ── -->
     <div id="pickup-prompt" class="hidden">
-      <span id="pickup-text">Подобрать: ? [F / Пробел]</span>
+      <span id="pickup-text">Подобрать: ? [F]</span>
     </div>
 
-    <!-- Combat overlay -->
+    <!-- ── Combat overlay ── -->
     <div id="combat-overlay" class="hidden">
       <div id="combat-panel">
         <div class="combat-title" id="combat-title">БОЙ</div>
@@ -105,17 +96,47 @@
       </div>
     </div>
 
+    <!-- ── Craft panel ── -->
+    <div id="craft-panel" class="hidden side-panel">
+      <div class="side-panel-header">
+        <span>[ МАСТЕРСКАЯ ]</span>
+        <button class="side-close" id="craft-close">✕</button>
+      </div>
+      <div class="side-panel-hint">Создавайте предметы из деталей и инструментов</div>
+      <div id="craft-list"></div>
+    </div>
+
+    <!-- ── Trade panel ── -->
+    <div id="trade-panel" class="hidden side-panel">
+      <div class="side-panel-header">
+        <span>[ ТОРГОВЛЯ ]</span>
+        <button class="side-close" id="trade-close">✕</button>
+      </div>
+      <div class="trade-npc-info">
+        <span id="trade-npc-name" class="trade-npc-name">—</span>
+        <span id="trade-npc-faction" class="trade-faction">—</span>
+      </div>
+      <div id="trade-greeting" class="trade-greeting">…</div>
+      <div id="trade-resources" class="trade-resources"></div>
+      <div id="trade-body"></div>
+    </div>
+
   </div><!-- /hud -->
 
-  <!-- Start screen -->
+  <!-- ── Start screen ── -->
   <div id="start-screen">
     <div id="start-box">
       <div id="title-top">◈ &nbsp; Сектор Б-7 &nbsp; ◈</div>
       <div id="game-title">СЕВЕРНЫЙ РУБЕЖ</div>
       <div id="game-sub">АЛЬТЕРНАТИВНЫЕ 50-е · ЗОНА ОТЧУЖДЕНИЯ · РЕТРОФУТУРИЗМ</div>
+      <div id="start-buttons">
+        <button id="btn-new-game" class="start-btn">НОВАЯ ИГРА</button>
+        <button id="btn-load-save" class="start-btn hidden">ЗАГРУЗИТЬ</button>
+      </div>
+      <div id="save-info" class="save-info"></div>
       <div id="start-hint" class="blink">[ НАЖМИТЕ ЛЮБУЮ КЛАВИШУ ИЛИ КЛИКНИТЕ ]</div>
       <div id="start-loading" class="hidden amber blink">ГЕНЕРАЦИЯ КАРТЫ 300 × 220…</div>
-      <div id="start-credits">v0.1 MVP</div>
+      <div id="start-credits">v0.2</div>
     </div>
   </div>
 
@@ -126,6 +147,10 @@
 <script src="js/map.js"></script>
 <script src="js/entities.js"></script>
 <script src="js/combat.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/craft.js"></script>
+<script src="js/traders.js"></script>
+<script src="js/save.js"></script>
 <script src="js/renderer.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/game.js"></script>

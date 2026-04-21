@@ -289,8 +289,34 @@ const RENDERER = (() => {
     ctx.fillText(item.icon || '?', cx + 10, cy + 10);
   }
 
+  // ── NPC sprite ────────────────────────────────────────────────────────────
+  function drawNPC(cx, cy, npc) {
+    const c = npc.clr || '#c8a020';
+    // Diamond shape for NPC
+    ctx.fillStyle = shadeColor(c, -40);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - 16); ctx.lineTo(cx + 12, cy);
+    ctx.lineTo(cx, cy + 16); ctx.lineTo(cx - 12, cy);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = c;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // Icon
+    ctx.fillStyle = c;
+    ctx.font = 'bold 13px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(npc.icon || '?', cx, cy);
+    // Name tag
+    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    ctx.fillRect(cx - 28, cy + 18, 56, 13);
+    ctx.fillStyle = c;
+    ctx.font = '9px monospace';
+    ctx.fillText(npc.name, cx, cy + 24);
+  }
+
   // ── Main render ───────────────────────────────────────────────────────────
-  function render(tiles, player, cam, highlightSet, activeEnemies) {
+  function render(tiles, player, cam, highlightSet, activeEnemies, npcs) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -372,6 +398,16 @@ const RENDERER = (() => {
           drawSprite(spriteKey(e), sx, sy, entityColors(e));
           drawHPBar(sx, sy, e.hp, e.max_hp);
         }
+      }
+    }
+
+    // NPCs
+    if (npcs) {
+      for (const npc of npcs) {
+        const tile = MAP.getTile(tiles, npc.col, npc.row);
+        if (!tile || !tile.visible) continue;
+        const { x: nx, y: ny } = hexCenter(npc.col, npc.row, cam);
+        drawNPC(nx, ny, npc);
       }
     }
 

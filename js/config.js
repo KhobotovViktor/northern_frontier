@@ -95,6 +95,32 @@ const ITEM_DEFS = {
     id:'assault_rifle', name:'АК-Р', type:'weapon', icon:'≡', clr:'#787858',
     desc:'Штурмовая винтовка. Урон 18–28.', damage:[18,28], range:3, slot:'weapon'
   },
+  // ── Craftable items ──────────────────────────────────────────────────────
+  bandage: {
+    id:'bandage', name:'Бинт', type:'consumable', icon:'†', clr:'#e8c890',
+    desc:'Быстрая перевязка. +10 HP.',
+    use(p){ const h=Math.min(10,p.max_hp-p.hp); p.hp+=h; return `Бинт: +${h} HP`; }
+  },
+  molotov: {
+    id:'molotov', name:'Коктейль Молотова', type:'weapon', icon:'!', clr:'#e86820',
+    desc:'Бросаемое оружие. Урон 25–40.', damage:[25,40], range:2, slot:'weapon'
+  },
+  crowbar_plus: {
+    id:'crowbar_plus', name:'Монтировка+', type:'weapon', icon:'/', clr:'#d4c040',
+    desc:'Улучшенная монтировка. Урон 14–22.', damage:[14,22], range:1, slot:'weapon'
+  },
+  pistol_plus: {
+    id:'pistol_plus', name:'ТТ-55 Mod.', type:'weapon', icon:'⌐', clr:'#d4b840',
+    desc:'Улучшенный пистолет. Урон 18–28.', damage:[18,28], range:2, slot:'weapon'
+  },
+  light_armor: {
+    id:'light_armor', name:'Лёгкий бронежилет', type:'armor', icon:'▣', clr:'#608878',
+    desc:'Самодельная броня. +6 брони.', armor:6, slot:'body'
+  },
+  winter_coat_plus: {
+    id:'winter_coat_plus', name:'Полушубок+', type:'armor', icon:'◩', clr:'#906868',
+    desc:'Улучшенный полушубок. +4 брони, −35 COLD.', armor:4, cold_res:35, slot:'body'
+  },
   vatnik: {
     id:'vatnik', name:'Ватник', type:'armor', icon:'◧', clr:'#806040',
     desc:'Броня +3, Холод −15.', armor:3, cold_res:15, slot:'body'

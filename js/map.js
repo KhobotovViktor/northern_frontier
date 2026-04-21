@@ -225,5 +225,14 @@ const MAP = (() => {
     return tile && tile.biome !== 'water' && tile.biome !== 'mountain';
   }
 
-  return { generate, getTile, setTile, passable, spawnEnemy };
+  // Generate returns tiles + npcs
+  function generateFull() {
+    const tiles = generate();
+    // TRADERS.spawnNPCs called after map is ready (TRADERS depends on MAP.passable)
+    const rng2  = makePRNG(CFG.MAP_SEED + 777);
+    const npcs  = typeof TRADERS !== 'undefined' ? TRADERS.spawnNPCs(tiles, rng2) : [];
+    return { tiles, npcs };
+  }
+
+  return { generate: generateFull, getTile, setTile, passable, spawnEnemy };
 })();

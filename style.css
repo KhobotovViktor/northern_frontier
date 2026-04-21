@@ -1,4 +1,4 @@
-/* ── Reset ─────────────────────────────────────────────────────────────────── */
+/* ── Reset ───────────────────────────────────────────────────────────────────── */
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
 body {
@@ -9,185 +9,149 @@ body {
   font-size: 13px;
 }
 
-/* ── Layout ────────────────────────────────────────────────────────────────── */
+/* ── Layout ──────────────────────────────────────────────────────────────────── */
 #game-wrapper { position:relative; width:100vw; height:100vh; overflow:hidden; }
 
 #game-canvas {
-  display:block;
-  position:absolute;
-  top:54px; left:0;
-  /* width/height set by JS */
+  display:block; position:absolute; top:54px; left:0;
 }
 
-#hud {
-  position:absolute; inset:0;
-  pointer-events:none;
-}
+#hud { position:absolute; inset:0; pointer-events:none; }
 
-/* ── Stats bar ─────────────────────────────────────────────────────────────── */
+/* ── Stats bar ───────────────────────────────────────────────────────────────── */
 #stats-bar {
   position:absolute; top:0; left:0; right:260px; height:54px;
-  background: rgba(5,10,4,0.96);
-  border-bottom: 1px solid #1e3e14;
-  display:flex; align-items:center; gap:18px; padding:0 14px;
-  pointer-events:auto;
+  background:rgba(5,10,4,0.96); border-bottom:1px solid #1e3e14;
+  display:flex; align-items:center; gap:14px; padding:0 12px;
+  pointer-events:auto; flex-wrap:nowrap; overflow:hidden;
 }
 
-.stat-group { display:flex; align-items:center; gap:6px; }
+.stat-group { display:flex; align-items:center; gap:5px; flex-shrink:0; }
+.stat-lbl   { font-size:10px; color:#2e5a28; letter-spacing:1px; text-transform:uppercase; min-width:34px; }
 
-.stat-lbl {
-  font-size:10px; color:#2e5a28; letter-spacing:1px;
-  text-transform:uppercase; min-width:36px;
-}
-
-.bar-wrap {
-  width:72px; height:8px;
-  background:#08100a; border:1px solid #1a3012;
-}
-.bar { height:100%; transition:width .25s ease; }
+.bar-wrap { width:68px; height:8px; background:#08100a; border:1px solid #1a3012; flex-shrink:0; }
+.bar      { height:100%; transition:width .25s ease; }
 .hp-bar   { background:#2e7a2e; width:100%; }
-.rad-bar  { background:#607828; width:0%;   }
-.cold-bar { background:#385888; width:0%;   }
+.rad-bar  { background:#607828; width:0%; }
+.cold-bar { background:#385888; width:0%; }
 
-.stat-val { font-size:11px; color:#7ab870; min-width:46px; }
-
+.stat-val  { font-size:11px; color:#7ab870; min-width:44px; flex-shrink:0; }
 .stat-pill {
-  font-size:10px; color:#3a5e34; white-space:nowrap;
-  padding:2px 8px;
-  border:1px solid #1a3012;
-  background: #06100a;
+  font-size:10px; color:#3a5e34; white-space:nowrap; flex-shrink:0;
+  padding:2px 7px; border:1px solid #1a3012; background:#06100a;
 }
 .stat-pill .amber { color:#c8a020; }
 .stat-pill.dim    { color:#243c20; }
+.amber { color:#c8a020; }
+.dim   { color:#2a4228; }
 
-/* ── Right panel ───────────────────────────────────────────────────────────── */
+.status-badge {
+  font-size:9px; padding:1px 4px; border-radius:2px; letter-spacing:1px;
+}
+.status-badge.bleed { background:#601010; color:#e06060; }
+.status-badge.stun  { background:#404010; color:#d0d060; }
+
+.hud-btn {
+  background:#06100a; border:1px solid #1a3012; color:#4a7a42;
+  font-size:14px; width:28px; height:28px; cursor:pointer; flex-shrink:0;
+  transition:border-color .12s, color .12s; padding:0;
+}
+.hud-btn:hover { border-color:#3a6a2a; color:#90c880; }
+
+/* ── Right panel ─────────────────────────────────────────────────────────────── */
 #right-panel {
   position:absolute; top:0; right:0; width:260px; height:100vh;
-  background: rgba(5,10,4,0.97);
-  border-left:1px solid #1e3e14;
-  display:flex; flex-direction:column;
-  overflow:hidden;
-  pointer-events:auto;
+  background:rgba(5,10,4,0.97); border-left:1px solid #1e3e14;
+  display:flex; flex-direction:column; overflow:hidden; pointer-events:auto;
 }
 
 .panel-title {
-  font-size:10px; color:#c8a020; letter-spacing:2px;
-  text-align:center; padding:5px 0;
-  border-top:1px solid #1a3012;
-  border-bottom:1px solid #1a3012;
+  font-size:10px; color:#c8a020; letter-spacing:2px; text-align:center;
+  padding:5px 0; border-top:1px solid #1a3012; border-bottom:1px solid #1a3012;
   flex-shrink:0;
 }
-
-#minimap {
-  width:100%; flex-shrink:0;
-  border-bottom:1px solid #1a3012;
-  image-rendering:pixelated;
-}
-
-/* ── Inventory ─────────────────────────────────────────────────────────────── */
-#inventory-slots {
-  display:grid; grid-template-columns:1fr 1fr;
-  gap:3px; padding:5px; flex-shrink:0;
-}
-
-.inv-slot {
-  position:relative; height:52px;
-  background:#07100a; border:1px solid #183010;
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  cursor:pointer; padding:3px;
-  transition: border-color .12s, background .12s;
-}
-.inv-slot:hover         { border-color:#3a6a2a; background:#0d1c0c; }
-.inv-slot.empty         { opacity:.28; cursor:default; }
-.inv-slot .slot-badge   { position:absolute; top:2px; right:3px; font-size:8px; color:#2e5a24; }
-.inv-slot .slot-icon    { font-size:20px; line-height:1; }
-.inv-slot .slot-name    { font-size:9px; color:#50883e; text-align:center; margin-top:2px;
-                          white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; }
-
 .panel-section {
   font-size:9px; color:#2e5a24; letter-spacing:1px;
   padding:3px 8px; border-top:1px solid #10180c; flex-shrink:0;
 }
+.panel-hint { font-size:8px; color:#1e3e18; text-align:center; padding:3px; flex-shrink:0; }
+
+#minimap { width:100%; flex-shrink:0; border-bottom:1px solid #1a3012; image-rendering:pixelated; }
+
+/* ── Inventory ───────────────────────────────────────────────────────────────── */
+#inventory-slots {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:3px; padding:5px; flex-shrink:0;
+}
+.inv-slot {
+  position:relative; height:50px;
+  background:#07100a; border:1px solid #183010;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  cursor:pointer; padding:3px; transition:border-color .12s, background .12s;
+}
+.inv-slot:hover        { border-color:#3a6a2a; background:#0d1c0c; }
+.inv-slot.empty        { opacity:.28; cursor:default; }
+.slot-badge            { position:absolute; top:2px; right:3px; font-size:8px; color:#2e5a24; }
+.slot-icon             { font-size:18px; line-height:1; }
+.slot-name             { font-size:9px; color:#50883e; text-align:center; margin-top:2px;
+                         white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; }
 
 #equipment-slots { padding:4px 8px; flex-shrink:0; }
-.equip-row       { display:flex; justify-content:space-between; padding:2px 0;
-                   border-bottom:1px solid #0e160c; }
+.equip-row       { display:flex; justify-content:space-between; padding:2px 0; border-bottom:1px solid #0e160c; }
 .eq-lbl          { font-size:9px; color:#2e5a24; }
 .eq-val          { font-size:9px; color:#90c880; cursor:pointer; }
 .eq-val:hover    { color:#d0f0c8; }
 
-.panel-hint { font-size:8px; color:#1e3e18; text-align:center; padding:3px; flex-shrink:0; }
-
-/* ── Event log ─────────────────────────────────────────────────────────────── */
+/* ── Event log ───────────────────────────────────────────────────────────────── */
 #log-entries {
-  flex:1 1 0; overflow-y:auto; padding:5px 7px;
-  min-height:0;
+  flex:1 1 0; overflow-y:auto; padding:5px 7px; min-height:0;
 }
-.log-entry        { font-size:10px; line-height:1.6; color:#4a7844;
-                    border-bottom:1px solid #0c140a; padding:1px 0; }
+.log-entry        { font-size:10px; line-height:1.6; color:#4a7844; border-bottom:1px solid #0c140a; padding:1px 0; }
 .log-entry.combat { color:#c07038; }
 .log-entry.pickup { color:#3898a8; }
 .log-entry.damage { color:#b83020; }
 .log-entry.system { color:#c8a020; }
 
-/* ── Help bar ──────────────────────────────────────────────────────────────── */
+/* ── Help bar ────────────────────────────────────────────────────────────────── */
 #help-bar {
   position:absolute; bottom:0; left:0; right:260px; height:24px;
-  background:rgba(4,8,3,0.95);
-  border-top:1px solid #162e10;
+  background:rgba(4,8,3,0.95); border-top:1px solid #162e10;
   display:flex; align-items:center; justify-content:center;
   font-size:9px; color:#223e1c; letter-spacing:.5px;
 }
 
-/* ── Pickup prompt ─────────────────────────────────────────────────────────── */
+/* ── Pickup prompt ───────────────────────────────────────────────────────────── */
 #pickup-prompt {
   position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
-  background:rgba(5,12,4,0.95);
-  border:1px solid #3a7a24;
-  padding:5px 16px;
-  font-size:11px; color:#60c850; letter-spacing:1px;
+  background:rgba(5,12,4,0.95); border:1px solid #3a7a24;
+  padding:5px 16px; font-size:11px; color:#60c850; letter-spacing:1px;
   pointer-events:none;
 }
 #pickup-prompt.hidden { display:none; }
 
-/* ── Combat overlay ────────────────────────────────────────────────────────── */
+/* ── Combat overlay ──────────────────────────────────────────────────────────── */
 #combat-overlay {
-  position:absolute; inset:0;
-  background:rgba(0,0,0,0.72);
+  position:absolute; inset:0; background:rgba(0,0,0,0.72);
   display:flex; align-items:center; justify-content:center;
-  pointer-events:auto;
-  z-index:50;
+  pointer-events:auto; z-index:50;
 }
 #combat-overlay.hidden { display:none; }
 
 #combat-panel {
-  background:#060d05;
-  border:2px solid #3a6a1e;
-  min-width:420px; max-width:520px;
-  padding:22px 24px;
+  background:#060d05; border:2px solid #3a6a1e;
+  min-width:420px; max-width:520px; padding:22px 24px;
   box-shadow:0 0 60px rgba(40,120,20,0.3);
 }
-
-.combat-title {
-  text-align:center; font-size:16px; color:#c8a020;
-  letter-spacing:4px; margin-bottom:18px;
-}
-
-#combat-combatants {
-  display:flex; align-items:center; justify-content:space-around;
-  margin-bottom:16px;
-}
-.fighter { text-align:center; }
-.fighter-name { font-size:12px; color:#90d080; letter-spacing:2px; }
-.fighter-hp   { font-size:11px; color:#2e7a2e; margin-top:4px; }
-.combat-vs    { font-size:28px; color:#c03020; }
+.combat-title   { text-align:center; font-size:16px; color:#c8a020; letter-spacing:4px; margin-bottom:18px; }
+#combat-combatants { display:flex; align-items:center; justify-content:space-around; margin-bottom:16px; }
+.fighter        { text-align:center; }
+.fighter-name   { font-size:12px; color:#90d080; letter-spacing:2px; }
+.fighter-hp     { font-size:11px; color:#2e7a2e; margin-top:4px; }
+.combat-vs      { font-size:28px; color:#c03020; }
 
 #combat-log {
-  height:120px; overflow-y:auto;
-  background:#040b03; border:1px solid #1a3010;
-  padding:6px 8px; margin-bottom:14px;
-  font-size:10px; line-height:1.7; color:#507848;
+  height:130px; overflow-y:auto; background:#040b03; border:1px solid #1a3010;
+  padding:6px 8px; margin-bottom:14px; font-size:10px; line-height:1.7; color:#507848;
 }
 .clog-line            { padding:1px 0; }
 .clog-line.player-atk { color:#90d070; }
@@ -200,53 +164,115 @@ body {
 .clog-line.item       { color:#38b8a0; }
 .clog-line.death      { color:#c03020; }
 .clog-line.system     { color:#c8a020; }
+.clog-line.stun       { color:#c0c040; }
 
 #combat-actions { display:flex; gap:12px; justify-content:center; }
-
 .cbtn {
-  background:#071005; border:1px solid #2e5a1e;
-  color:#72a86a; padding:8px 18px;
-  font-family:inherit; font-size:11px; letter-spacing:2px;
+  background:#071005; border:1px solid #2e5a1e; color:#72a86a;
+  padding:8px 18px; font-family:inherit; font-size:11px; letter-spacing:2px;
   cursor:pointer; transition:all .12s;
 }
 .cbtn:hover { background:#122010; border-color:#5a9a3a; color:#c0e8b0; }
 
-/* Combat item submenu */
-.combat-item-menu {
-  margin-top:12px; background:#040b03; border:1px solid #1e4010;
-  padding:8px;
-}
+.combat-item-menu { margin-top:12px; background:#040b03; border:1px solid #1e4010; padding:8px; }
 .cim-btn {
-  display:block; width:100%;
-  background:#07100a; border:1px solid #1a3010;
+  display:block; width:100%; background:#07100a; border:1px solid #1a3010;
   color:#72a86a; font-family:inherit; font-size:11px;
-  padding:5px 10px; margin-bottom:4px; cursor:pointer;
-  text-align:left; letter-spacing:1px;
-  transition:background .1s;
+  padding:5px 10px; margin-bottom:4px; cursor:pointer; text-align:left;
+  letter-spacing:1px; transition:background .1s;
 }
 .cim-btn:hover   { background:#0f1e0c; border-color:#3a6a2a; }
 .cim-cancel      { color:#804030; border-color:#402010; margin-top:6px; }
 .cim-empty       { font-size:10px; color:#3a5a30; padding:4px; text-align:center; }
 
-/* ── Item tooltip ──────────────────────────────────────────────────────────── */
-.item-tooltip {
-  background:#050e04; border:1px solid #2e5a20;
-  padding:8px 12px; min-width:160px; max-width:220px;
-  font-size:10px; line-height:1.7; pointer-events:none;
-  box-shadow:0 4px 20px rgba(0,0,0,0.6);
+/* ── Side panels (craft + trade) ─────────────────────────────────────────────── */
+.side-panel {
+  position:absolute; top:54px; left:0; width:340px;
+  height:calc(100vh - 54px - 24px);
+  background:rgba(5,10,4,0.97); border-right:1px solid #1e3e14;
+  display:flex; flex-direction:column; overflow:hidden; pointer-events:auto; z-index:40;
 }
-.tt-name  { font-size:12px; font-weight:bold; }
-.tt-type  { font-size:9px; color:#2e5a24; letter-spacing:1px; }
-.tt-desc  { color:#507848; margin-top:4px; }
-.tt-stat  { color:#c8a020; }
-.tt-hint  { color:#2e5a24; margin-top:4px; font-size:9px; }
+.side-panel.hidden { display:none; }
 
-/* ── Level-up flash ────────────────────────────────────────────────────────── */
+.side-panel-header {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 12px; border-bottom:1px solid #1a3012;
+  font-size:11px; color:#c8a020; letter-spacing:2px; flex-shrink:0;
+}
+.side-close {
+  background:none; border:1px solid #2a4a1a; color:#4a7a42;
+  font-size:12px; width:22px; height:22px; cursor:pointer;
+  transition:border-color .12s, color .12s; padding:0;
+}
+.side-close:hover { border-color:#6a9a3a; color:#90c870; }
+.side-panel-hint  { font-size:9px; color:#2a4a20; padding:5px 12px; flex-shrink:0; }
+
+/* ── Craft panel ─────────────────────────────────────────────────────────────── */
+#craft-list { flex:1 1 0; overflow-y:auto; padding:6px 8px; min-height:0; }
+
+.craft-cat  { font-size:9px; color:#c8a020; letter-spacing:2px; padding:6px 4px 3px; border-bottom:1px solid #1a3010; margin-bottom:4px; }
+
+.craft-row  {
+  display:flex; align-items:center; gap:8px;
+  background:#07100a; border:1px solid #162e10;
+  padding:6px 8px; margin-bottom:4px; transition:border-color .12s;
+}
+.craft-row:hover:not(.craft-disabled) { border-color:#2e5a20; }
+.craft-disabled { opacity:.45; }
+
+.craft-icon { font-size:18px; width:22px; text-align:center; flex-shrink:0; }
+.craft-info { flex:1; min-width:0; }
+.craft-name { font-size:11px; color:#90c870; }
+.craft-ing  { font-size:9px;  color:#3a6a30; margin-top:2px; }
+.craft-miss { font-size:9px;  color:#a04020; margin-top:1px; }
+
+.craft-btn {
+  background:#0a1608; border:1px solid #2a5018; color:#60a850;
+  font-family:inherit; font-size:9px; letter-spacing:1px;
+  padding:4px 8px; cursor:pointer; white-space:nowrap; flex-shrink:0;
+  transition:all .12s;
+}
+.craft-btn:hover  { background:#142408; border-color:#4a8030; color:#90d070; }
+.craft-btn-off    { opacity:.4; cursor:default; }
+
+/* ── Trade panel ─────────────────────────────────────────────────────────────── */
+.trade-npc-info { display:flex; justify-content:space-between; padding:8px 12px 4px; flex-shrink:0; }
+.trade-npc-name { font-size:13px; color:#c8d880; }
+.trade-faction  { font-size:10px; padding:2px 6px; border:1px solid #2a4a1a; }
+.trade-greeting { font-size:10px; color:#4a7a44; padding:0 12px 6px; font-style:italic; flex-shrink:0; }
+.trade-resources{ font-size:10px; color:#c8a020; padding:4px 12px; border-top:1px solid #1a3010; border-bottom:1px solid #1a3010; flex-shrink:0; }
+
+#trade-body { flex:1 1 0; overflow-y:auto; padding:6px 8px; min-height:0; }
+
+.trade-section-title {
+  font-size:9px; color:#c8a020; letter-spacing:2px;
+  padding:6px 4px 3px; border-bottom:1px solid #1a3010; margin-bottom:4px;
+}
+.trade-row {
+  display:flex; align-items:center; gap:6px;
+  background:#07100a; border:1px solid #162e10;
+  padding:5px 8px; margin-bottom:3px; transition:border-color .12s;
+}
+.trade-row:hover:not(.trade-disabled) { border-color:#2e5a20; }
+.trade-disabled { opacity:.4; }
+.trade-icon { font-size:16px; width:20px; text-align:center; flex-shrink:0; }
+.trade-name { flex:1; font-size:10px; color:#80b870; min-width:0; }
+.trade-cost { font-size:9px; color:#c8a020; white-space:nowrap; flex-shrink:0; }
+.trade-btn  {
+  background:#0a1608; border:1px solid #2a5018; color:#60a850;
+  font-family:inherit; font-size:9px; letter-spacing:1px;
+  padding:3px 7px; cursor:pointer; white-space:nowrap; flex-shrink:0;
+  transition:all .12s;
+}
+.trade-btn:hover:not(:disabled) { background:#142408; border-color:#4a8030; color:#90d070; }
+.trade-btn:disabled { opacity:.4; cursor:default; }
+
+/* ── Level-up flash ──────────────────────────────────────────────────────────── */
 .levelup-flash {
   position:absolute; top:25%; left:50%; transform:translate(-50%,-50%);
   font-size:22px; color:#f0e040; letter-spacing:4px;
   text-shadow:0 0 30px rgba(240,224,60,0.8);
-  animation: fadeup 2.5s ease forwards;
+  animation:fadeup 2.5s ease forwards;
   pointer-events:none; z-index:80;
 }
 @keyframes fadeup {
@@ -256,44 +282,36 @@ body {
   100% { opacity:0; transform:translate(-50%,-90%) scale(.95); }
 }
 
-/* ── Start screen ──────────────────────────────────────────────────────────── */
+/* ── Start screen ────────────────────────────────────────────────────────────── */
 #start-screen {
-  position:absolute; inset:0;
-  background:#000;
+  position:absolute; inset:0; background:#000;
   display:flex; align-items:center; justify-content:center;
   z-index:100; cursor:pointer;
 }
+#start-box     { text-align:center; }
+#title-top     { font-size:11px; color:#2e5a24; letter-spacing:6px; margin-bottom:12px; }
+#game-title    { font-size:54px; color:#c8a020; letter-spacing:10px; text-shadow:0 0 50px rgba(200,160,32,0.55); margin-bottom:10px; }
+#game-sub      { font-size:11px; color:#2e5a24; letter-spacing:3px; margin-bottom:40px; }
 
-#start-box { text-align:center; }
+#start-buttons { display:flex; gap:16px; justify-content:center; margin-bottom:14px; }
+.start-btn {
+  background:#08140a; border:1px solid #2a5a1a; color:#72a86a;
+  font-family:inherit; font-size:13px; letter-spacing:3px;
+  padding:10px 28px; cursor:pointer; transition:all .15s;
+}
+.start-btn:hover    { background:#122010; border-color:#5a9a3a; color:#c0e8b0; }
+.start-btn.hidden   { display:none; }
 
-#title-top {
-  font-size:11px; color:#2e5a24; letter-spacing:6px;
-  margin-bottom:12px;
-}
-#game-title {
-  font-size:54px; color:#c8a020; letter-spacing:10px;
-  text-shadow:0 0 50px rgba(200,160,32,0.55);
-  margin-bottom:10px;
-}
-#game-sub {
-  font-size:11px; color:#2e5a24; letter-spacing:3px;
-  margin-bottom:56px;
-}
-#start-hint   { font-size:13px; color:#72a86a; letter-spacing:3px; }
-#start-loading{ font-size:13px; letter-spacing:3px; margin-top:18px; }
-#start-credits{ position:absolute; bottom:16px; right:20px;
-                font-size:9px; color:#1a2e18; }
+.save-info     { font-size:10px; color:#3a6a30; letter-spacing:1px; margin-bottom:24px; min-height:16px; }
+#start-hint    { font-size:13px; color:#72a86a; letter-spacing:3px; }
+#start-loading { font-size:13px; letter-spacing:3px; margin-top:18px; }
+#start-credits { position:absolute; bottom:16px; right:20px; font-size:9px; color:#1a2e18; }
 
-.amber  { color:#c8a020; }
 .hidden { display:none !important; }
 .blink  { animation:blink 1.4s step-end infinite; }
+@keyframes blink { 0%,100%{ opacity:1; } 50%{ opacity:.2; } }
 
-@keyframes blink {
-  0%,100% { opacity:1; }
-  50%     { opacity:.2; }
-}
-
-/* ── Scrollbars ────────────────────────────────────────────────────────────── */
+/* ── Scrollbars ──────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar       { width:3px; }
 ::-webkit-scrollbar-track { background:#060e05; }
 ::-webkit-scrollbar-thumb { background:#1e3e14; }
