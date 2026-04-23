@@ -289,6 +289,33 @@ const RENDERER = (() => {
     ctx.fillText(item.icon || '?', cx + 10, cy + 10);
   }
 
+  // ── Landmark marker ───────────────────────────────────────────────────────
+  function drawLandmark(cx, cy, name) {
+    // Amber diamond outline
+    ctx.strokeStyle = '#c8a020';
+    ctx.lineWidth   = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx,      cy - 20);
+    ctx.lineTo(cx + 15, cy);
+    ctx.lineTo(cx,      cy + 20);
+    ctx.lineTo(cx - 15, cy);
+    ctx.closePath();
+    ctx.stroke();
+    // Star icon
+    ctx.fillStyle = '#c8a020';
+    ctx.font = 'bold 12px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('★', cx, cy);
+    // Name tag
+    const tw = Math.min(130, name.length * 6.5 + 10);
+    ctx.fillStyle = 'rgba(0,0,0,0.78)';
+    ctx.fillRect(cx - tw/2, cy + 22, tw, 13);
+    ctx.fillStyle = '#e0c050';
+    ctx.font = '9px monospace';
+    ctx.fillText(name, cx, cy + 28);
+  }
+
   // ── NPC sprite ────────────────────────────────────────────────────────────
   function drawNPC(cx, cy, npc) {
     const c = npc.clr || '#c8a020';
@@ -392,6 +419,11 @@ const RENDERER = (() => {
           drawItemDot(sx, sy, tile.items[0]);
         }
 
+        // Landmark
+        if (tile.landmark && tile.visible) {
+          drawLandmark(sx, sy, tile.landmark_name || tile.landmark);
+        }
+
         // Enemy
         if (tile.enemy && tile.visible) {
           const e = tile.enemy;
@@ -432,7 +464,7 @@ const RENDERER = (() => {
     bunker:'#c8a020',
   };
 
-  function renderMinimap(tiles, player, cam, minimapCanvas) {
+  function renderMinimap(tiles, player, cam, minimapCanvas, locations) {
     const mc = minimapCanvas.getContext('2d');
     const mw = minimapCanvas.width, mh = minimapCanvas.height;
     const scx = mw / CFG.MAP_COLS, scy = mh / CFG.MAP_ROWS;
@@ -451,6 +483,18 @@ const RENDERER = (() => {
         mc.fillRect(Math.floor(c * scx), Math.floor(r * scy),
                     Math.max(1, Math.floor(scx)), Math.max(1, Math.floor(scy)));
         mc.globalAlpha = 1;
+      }
+    }
+
+    // Landmark dots
+    if (locations) {
+      mc.fillStyle = '#c8a020';
+      for (const loc of locations) {
+        const tile = MAP.getTile(tiles, loc.col, loc.row);
+        if (!tile || !tile.explored) continue;
+        mc.beginPath();
+        mc.arc(loc.col * scx, loc.row * scy, 2, 0, Math.PI * 2);
+        mc.fill();
       }
     }
 

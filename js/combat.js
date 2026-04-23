@@ -10,8 +10,10 @@ const COMBAT = (() => {
 
     // Player buff
     if (isPlayer && attacker.buff_turns > 0) raw += attacker.buff_dmg;
-    // Player debuff (vodka)
+    // Player debuff (accuracy)
     if (isPlayer && attacker.debuff_accuracy > 0 && Math.random() < 0.25) raw = Math.floor(raw * 0.6);
+    // Hunger debuff
+    if (isPlayer && (attacker.hunger || 0) >= 80) raw = Math.max(1, raw - 2);
 
     const armor  = defender.armor || 0;
     const dmg    = Math.max(1, raw - armor);

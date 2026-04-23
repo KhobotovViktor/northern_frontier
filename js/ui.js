@@ -38,6 +38,8 @@ const UI = (() => {
     setW('hp-bar',   Math.max(0, (player.hp / player.max_hp) * 100));
     setW('rad-bar',  Math.min(100, player.radiation));
     setW('cold-bar', Math.min(100, player.cold));
+    setW('hng-bar',  Math.min(100, player.hunger || 0));
+    setW('thr-bar',  Math.min(100, player.thirst || 0));
 
     const hpBar = document.getElementById('hp-bar');
     if (hpBar) {
@@ -47,11 +49,72 @@ const UI = (() => {
     const radBar = document.getElementById('rad-bar');
     if (radBar) radBar.style.background = player.radiation > 60 ? '#c03020' : '#607828';
 
-    const bleedEl = document.getElementById('status-bleed');
-    const stunEl  = document.getElementById('status-stun');
-    if (bleedEl) bleedEl.style.display = player.bleed > 0 ? 'inline' : 'none';
-    if (stunEl)  stunEl.style.display  = player.stun  > 0 ? 'inline' : 'none';
+    const hng = player.hunger || 0, thr = player.thirst || 0;
+    const hngBar = document.getElementById('hng-bar');
+    if (hngBar) hngBar.style.background = hng > 60 ? '#c05010' : '#8a4820';
+    const thrBar = document.getElementById('thr-bar');
+    if (thrBar) thrBar.style.background = thr > 60 ? '#1060c0' : '#206888';
+
+    const show = (id, v) => { const e = document.getElementById(id); if (e) e.style.display = v ? 'inline' : 'none'; };
+    show('status-bleed',  player.bleed > 0);
+    show('status-stun',   player.stun  > 0);
+    show('status-hunger', hng >= 60);
+    show('status-thirst', thr >= 60);
   }
+
+  // ── Weather pill ──────────────────────────────────────────────────────────
+  function updateWeather(weather) {
+    if (!weather || typeof WEATHER_TYPES === 'undefined') return;
+    const wt   = WEATHER_TYPES[weather.type];
+    const icon = wt ? wt.icon : '☀';
+    const name = wt ? wt.name : weather.type;
+    const pill = document.getElementById('weather-pill');
+    const wtEl = document.getElementById('weather-text');
+    const trEl = document.getElementById('weather-turns');
+    if (pill) {
+      // Update icon (first text node)
+      const span = pill.querySelector('span#weather-text');
+      if (span) { pill.childNodes[0].textContent = icon + '\u00a0'; }
+    }
+    if (wtEl) wtEl.textContent = name;
+    if (trEl) trEl.textContent = weather.turnsLeft > 2 ? `(${weather.turnsLeft})` : '';
+    if (pill) {
+      const danger = wt && (wt.rad_mod >= 7);
+      const warn   = wt && (wt.cold_mod > 1 || wt.vis_mod < 0 || wt.rad_mod > 0);
+      pill.style.borderColor = danger ? '#804020' : warn ? '#6a5010' : '#1a3012';
+      pill.style.color       = danger ? '#e08040' : warn ? '#c8a020' : '#3a5e34';
+    }
+  }
+
+  // ── Quest list ────────────────────────────────────────────────────────────
+  function updateQuests(activeQuests) {
+    const el = document.getElementById('quest-list');
+    if (!el) return;
+    if (!activeQuests || !activeQuests.length) {
+      el.innerHTML = '<div class="quest-empty">Нет активных заданий</div>';
+      return;
+    }
+    el.innerHTML = activeQuests.map(q => {
+      const total = q.count || 1;
+      const prog  = Math.min(q.progress, total);
+      const pct   = Math.floor((prog / total) * 100);
+      return `
+        <div class="quest-row${prog >= total ? ' quest-done' : ''}">
+          <div class="quest-title">${q.title}</div>
+          <div class="quest-desc">${q.desc}</div>
+          <div class="quest-bar-wrap"><div class="quest-bar" style="width:${pct}%"></div></div>
+          <div class="quest-progress">${prog} / ${total}</div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Note modal ────────────────────────────────────────────────────────────
+  function showNote(text) {
+    const el = document.getElementById('note-text');
+    if (el) el.textContent = text;
+    document.getElementById('note-overlay')?.classList.remove('hidden');
+  }
+  function hideNote() { document.getElementById('note-overlay')?.classList.add('hidden'); }
 
   // ── Inventory panel ───────────────────────────────────────────────────────
   function updateInventory(player, onAction) {
@@ -356,10 +419,12 @@ const UI = (() => {
 
   return {
     log, updateStats, updateInventory,
+    updateWeather, updateQuests,
     showPickup, hidePickup,
     showCombat, hideCombat, updateCombatHP, addCombatLog, showCombatItemMenu,
     showCraftPanel, hideCraftPanel, refreshCraftPanel,
     showTradePanel, hideTradePanel, refreshTradePanel,
+    showNote, hideNote,
     updateSaveBtn, showDeath, flashLevelUp,
   };
 })();

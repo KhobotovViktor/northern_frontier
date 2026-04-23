@@ -34,6 +34,8 @@ body {
 .hp-bar   { background:#2e7a2e; width:100%; }
 .rad-bar  { background:#607828; width:0%; }
 .cold-bar { background:#385888; width:0%; }
+.hng-bar  { background:#8a4820; width:0%; }
+.thr-bar  { background:#206888; width:0%; }
 
 .stat-val  { font-size:11px; color:#7ab870; min-width:44px; flex-shrink:0; }
 .stat-pill {
@@ -48,8 +50,10 @@ body {
 .status-badge {
   font-size:9px; padding:1px 4px; border-radius:2px; letter-spacing:1px;
 }
-.status-badge.bleed { background:#601010; color:#e06060; }
-.status-badge.stun  { background:#404010; color:#d0d060; }
+.status-badge.bleed   { background:#601010; color:#e06060; }
+.status-badge.stun    { background:#404010; color:#d0d060; }
+.status-badge.hunger  { background:#5a3010; color:#e09040; }
+.status-badge.thirst  { background:#103050; color:#40a0e0; }
 
 .hud-btn {
   background:#06100a; border:1px solid #1a3012; color:#4a7a42;
@@ -310,6 +314,46 @@ body {
 .hidden { display:none !important; }
 .blink  { animation:blink 1.4s step-end infinite; }
 @keyframes blink { 0%,100%{ opacity:1; } 50%{ opacity:.2; } }
+
+/* ── Quest list ──────────────────────────────────────────────────────────────── */
+#quest-list { padding:4px 6px; flex-shrink:0; max-height:120px; overflow-y:auto; }
+
+.quest-row {
+  background:#070f06; border:1px solid #162e10;
+  padding:4px 7px; margin-bottom:3px;
+}
+.quest-done     { border-color:#c8a020; opacity:.55; }
+.quest-title    { font-size:10px; color:#a0d080; letter-spacing:1px; }
+.quest-desc     { font-size:8px;  color:#3a6030; margin-top:1px; }
+.quest-bar-wrap { height:3px; background:#0c160a; margin:3px 0 1px; }
+.quest-bar      { height:100%; background:#3a7828; transition:width .3s; }
+.quest-progress { font-size:8px; color:#2e5828; text-align:right; }
+.quest-empty    { font-size:9px; color:#1e3818; text-align:center; padding:5px; }
+
+/* ── Note overlay ────────────────────────────────────────────────────────────── */
+#note-overlay {
+  position:absolute; inset:0; background:rgba(0,0,0,0.75);
+  display:flex; align-items:center; justify-content:center;
+  pointer-events:auto; z-index:60;
+}
+#note-overlay.hidden { display:none; }
+
+#note-panel {
+  background:#07100a; border:2px solid #6a5010;
+  max-width:480px; width:90%; padding:20px 24px;
+  box-shadow:0 0 40px rgba(120,80,0,0.3);
+}
+.note-header {
+  font-size:11px; color:#c8a020; letter-spacing:3px;
+  text-align:center; margin-bottom:14px; border-bottom:1px solid #3a3010; padding-bottom:8px;
+}
+#note-text {
+  font-family:'Share Tech Mono','Courier New',monospace;
+  font-size:11px; color:#b0a060; line-height:1.8;
+  white-space:pre-wrap; margin-bottom:16px;
+  max-height:280px; overflow-y:auto;
+}
+#note-close { display:block; margin:0 auto; letter-spacing:2px; }
 
 /* ── Scrollbars ──────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar       { width:3px; }

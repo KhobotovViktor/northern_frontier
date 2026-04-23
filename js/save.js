@@ -52,6 +52,7 @@ const SAVE = (() => {
       col: p.col, row: p.row,
       hp: p.hp, max_hp: p.max_hp,
       radiation: p.radiation, cold: p.cold,
+      hunger: p.hunger || 0, thirst: p.thirst || 0,
       bleed: p.bleed, stun: p.stun,
       xp: p.xp, level: p.level,
       inventory: JSON.parse(JSON.stringify(p.inventory)),
@@ -100,6 +101,7 @@ const SAVE = (() => {
         player: _snapPlayer(player),
         tiles:  _packTiles(tiles),
         npcs:   _snapNPCs(npcs),
+        quests: (typeof QUESTS !== 'undefined') ? QUESTS.toJSON() : null,
       };
       const json = JSON.stringify(blob);
       localStorage.setItem(KEY, json);
@@ -128,6 +130,11 @@ const SAVE = (() => {
             HEX.distance(n.col, n.row, snap.col, snap.row) < 5);
           if (npc) { npc.col = snap.col; npc.row = snap.row; }
         });
+      }
+
+      // Restore quests
+      if (blob.quests && typeof QUESTS !== 'undefined') {
+        QUESTS.fromJSON(blob.quests, blob.turn);
       }
 
       return { turn: blob.turn, camera: blob.camera };

@@ -9,26 +9,23 @@ class Player {
     this.max_hp    = 100;
     this.radiation = 0;
     this.cold      = 0;
-    this.bleed     = 0;          // turns of bleeding
-    this.stun      = 0;          // turns stunned
+    this.hunger    = 0;   // 0=full → 100=starving; +1/turn
+    this.thirst    = 0;   // 0=hydrated → 100=dehydrated; +2/turn
+    this.bleed     = 0;
+    this.stun      = 0;
     this.xp        = 0;
     this.level     = 1;
 
-    // inventory: array of item objects (max CFG.MAX_INVENTORY)
     this.inventory = [];
-
-    // equipped slots
     this.equipped  = { weapon: null, body: null, head: null };
 
-    // derived stats (recomputed after equip)
-    this.armor     = 0;
-    this.cold_res  = 0;
-    this.rad_res   = 0;
-    this.weapon_dmg = [1, 4];    // unarmed
+    this.armor      = 0;
+    this.cold_res   = 0;
+    this.rad_res    = 0;
+    this.weapon_dmg = [1, 4];
 
-    // temp buffs
-    this.buff_dmg   = 0;
-    this.buff_turns = 0;
+    this.buff_dmg        = 0;
+    this.buff_turns      = 0;
     this.debuff_accuracy = 0;
   }
 
@@ -57,6 +54,7 @@ class Player {
     let dmg = mn + Math.floor(Math.random() * (mx - mn + 1));
     if (this.buff_turns > 0) dmg += this.buff_dmg;
     if (this.debuff_accuracy > 0 && Math.random() < 0.25) dmg = Math.floor(dmg * 0.6);
+    if ((this.hunger || 0) >= 80) dmg = Math.max(1, dmg - 2);  // starving debuff
     return Math.max(1, dmg);
   }
 
@@ -66,9 +64,7 @@ class Player {
     return true;
   }
 
-  removeItem(idx) {
-    this.inventory.splice(idx, 1);
-  }
+  removeItem(idx) { this.inventory.splice(idx, 1); }
 
   equip(idx) {
     const item = this.inventory[idx];
@@ -92,30 +88,52 @@ class Player {
     return `Снято: ${item.name}`;
   }
 
+  // Returns array of damage messages; also increments hunger/thirst
   tickEffects() {
     const msgs = [];
-    // Radiation damage
+
+    // ── Radiation ────────────────────────────────────────────────────────────
     if (this.radiation > 0) {
       const dmg = Math.floor(this.radiation / 25);
       if (dmg > 0) { this.hp -= dmg; msgs.push(`Радиация: -${dmg} HP`); }
     }
-    // Cold damage
+
+    // ── Cold ─────────────────────────────────────────────────────────────────
     if (this.cold > 0) {
       const dmg = Math.floor(this.cold / 30);
       if (dmg > 0) { this.hp -= dmg; msgs.push(`Обморожение: -${dmg} HP`); }
     }
-    // Bleeding
+
+    // ── Bleeding ─────────────────────────────────────────────────────────────
     if (this.bleed > 0) {
       this.hp -= 3; this.bleed--;
-      msgs.push(`Кровотечение: -3 HP`);
+      msgs.push('Кровотечение: -3 HP');
     }
-    // Buff decay
+
+    // ── Hunger ───────────────────────────────────────────────────────────────
+    this.hunger = Math.min(100, (this.hunger || 0) + 1);
+    if (this.hunger >= 80) {
+      this.hp -= 2; msgs.push('Голод: -2 HP');
+    } else if (this.hunger >= 60) {
+      this.hp -= 1; msgs.push('Голод: -1 HP');
+    }
+
+    // ── Thirst ───────────────────────────────────────────────────────────────
+    this.thirst = Math.min(100, (this.thirst || 0) + 2);
+    if (this.thirst >= 80) {
+      this.hp -= 2; msgs.push('Жажда: -2 HP');
+    } else if (this.thirst >= 60) {
+      this.hp -= 1; msgs.push('Жажда: -1 HP');
+    }
+
+    // ── Buff decay ────────────────────────────────────────────────────────────
     if (this.buff_turns > 0) {
       this.buff_turns--;
       if (this.buff_turns === 0) this.buff_dmg = 0;
     }
     if (this.debuff_accuracy > 0) this.debuff_accuracy--;
     if (this.stun > 0) this.stun--;
+
     this.hp = Math.max(0, this.hp);
     return msgs;
   }

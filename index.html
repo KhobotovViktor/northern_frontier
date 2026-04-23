@@ -30,14 +30,25 @@
         <div class="bar-wrap"><div id="cold-bar" class="bar cold-bar"></div></div>
         <span id="cold-text" class="stat-val">0</span>
       </div>
+      <div class="stat-group">
+        <span class="stat-lbl">HNG</span>
+        <div class="bar-wrap"><div id="hng-bar" class="bar hng-bar"></div></div>
+      </div>
+      <div class="stat-group">
+        <span class="stat-lbl">THR</span>
+        <div class="bar-wrap"><div id="thr-bar" class="bar thr-bar"></div></div>
+      </div>
       <div class="stat-pill">ХОД&nbsp;<span id="turn-text" class="amber">1</span></div>
       <div class="stat-pill"><span id="level-text">Ур.1</span>&nbsp;<span id="xp-text" class="dim">0/80</span></div>
       <div class="stat-pill">БРОНЯ&nbsp;<span id="armor-text">0</span></div>
       <div class="stat-pill">ОРУЖИЕ&nbsp;<span id="weapon-text">Кулаки</span></div>
       <div class="stat-pill dim">POS&nbsp;<span id="pos-text">0,0</span></div>
+      <div class="stat-pill" id="weather-pill">☀&nbsp;<span id="weather-text">Ясно</span>&nbsp;<span id="weather-turns" class="dim"></span></div>
       <div class="stat-pill">
-        <span id="status-bleed" class="status-badge bleed" style="display:none">КРОВО</span>
-        <span id="status-stun"  class="status-badge stun"  style="display:none">ОГЛУШ</span>
+        <span id="status-bleed"  class="status-badge bleed"  style="display:none">КРОВО</span>
+        <span id="status-stun"   class="status-badge stun"   style="display:none">ОГЛУШ</span>
+        <span id="status-hunger" class="status-badge hunger" style="display:none">ГОЛОД</span>
+        <span id="status-thirst" class="status-badge thirst" style="display:none">ЖАЖДА</span>
       </div>
       <button id="btn-save" class="hud-btn" title="Сохранить (F5/N)">💾</button>
     </div>
@@ -57,6 +68,9 @@
         <div class="equip-row"><span class="eq-lbl">ГОЛОВА:</span><span id="equip-head"   class="eq-val">—</span></div>
       </div>
       <div class="panel-hint">ПКМ надеть/использовать · [1–0] быстро · Tab крафт</div>
+
+      <div class="panel-title">[ ЗАДАНИЯ ]</div>
+      <div id="quest-list"></div>
 
       <div class="panel-title">[ ЛОГ ]</div>
       <div id="log-entries"></div>
@@ -121,6 +135,15 @@
       <div id="trade-body"></div>
     </div>
 
+    <!-- ── Note overlay ── -->
+    <div id="note-overlay" class="hidden">
+      <div id="note-panel">
+        <div class="note-header">[ НАЙДЕНА ЗАПИСКА ]</div>
+        <pre id="note-text"></pre>
+        <button id="note-close" class="cbtn">[ ЗАКРЫТЬ — ESC ]</button>
+      </div>
+    </div>
+
   </div><!-- /hud -->
 
   <!-- ── Start screen ── -->
@@ -136,7 +159,7 @@
       <div id="save-info" class="save-info"></div>
       <div id="start-hint" class="blink">[ НАЖМИТЕ ЛЮБУЮ КЛАВИШУ ИЛИ КЛИКНИТЕ ]</div>
       <div id="start-loading" class="hidden amber blink">ГЕНЕРАЦИЯ КАРТЫ 300 × 220…</div>
-      <div id="start-credits">v0.2</div>
+      <div id="start-credits">v0.3</div>
     </div>
   </div>
 
@@ -150,6 +173,7 @@
 <script src="js/audio.js"></script>
 <script src="js/craft.js"></script>
 <script src="js/traders.js"></script>
+<script src="js/quests.js"></script>
 <script src="js/save.js"></script>
 <script src="js/renderer.js"></script>
 <script src="js/ui.js"></script>
